@@ -13,9 +13,9 @@ conn.once('open', () => {
   gfs.collection('fs');
 });
 
-export const uploadFile = async (req, res) => {console.log('hoi');
+export const uploadFile = async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
+    if (!req.body || req.body.length === 0) {
       return res.status(404).json({ error: 'Files not found' });
     }
 
@@ -34,17 +34,17 @@ export const uploadFile = async (req, res) => {console.log('hoi');
   }
 };
 
-export const getImage = async (req, res) => {
-  try {
-    const file = await gfs.files.findOne({ filename: req.params.filename });
+// export const getImage = async (req, res) => {
+//   try {
+//     const file = await gfs.files.findOne({ filename: req.params.filename });
 
-    if (!file) {
-      return res.status(404).json({ error: 'File not found' });
-    }
+//     if (!file) {
+//       return res.status(404).json({ error: 'File not found' });
+//     }
 
-    const readStream = gridFsBucket.openDownloadStream(file._id);
-    readStream.pipe(res);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
+//     const readStream = gridFsBucket.openDownloadStream(file._id);
+//     readStream.pipe(res);
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
