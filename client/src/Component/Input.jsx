@@ -44,7 +44,7 @@ export default function ImageUploader() {
           type="file"
           onChange={handleFileChange}
           multiple
-          name="images"
+          name="file"
           methos="post"
         />
 

@@ -6,13 +6,14 @@ export const upload = async (data) => {
   try {
     const formData = new FormData();
 
-    // Assuming data.file is an array of File objects
+    // Assuming files is an array of File objects
     data.files.forEach((file, index) => {
-      console.log('files',file);
-                formData.append('name',file.name);
-                formData.append('file',file)
+      formData.append(`file${index + 1}`,  file.name); // Use unique names for each file
     });
-    console.log('formData',formData);
+
+    // Log the FormData object before making the request
+    console.log('FormData:', formData);
+
     // Make a POST request to the server
     const response = await axios.post(`${API_URL}/upload`, formData, {
       headers: {

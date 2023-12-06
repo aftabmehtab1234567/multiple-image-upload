@@ -1,21 +1,19 @@
-import { GridFSBucket } from 'mongodb';
+import grid from 'gridfs-stream';
 import mongoose from 'mongoose';
-import User from '../model/Schema.js';
 
 const url = 'http://localhost:8000';
 
-let gridFsBucket;
-
+let gfs, gridFsBucket;
 const conn = mongoose.connection;
-
 conn.once('open', () => {
-  // Create an instance of GridFSBucket using the new keyword
-  gridFsBucket = new GridFSBucket(conn.db, {
+  gridFsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
     bucketName: 'fs'
   });
+  gfs = grid(conn.db, mongoose.mongo);
+  gfs.collection('fs');
 });
 
-export const uploadFile = async (req, res) => {console.log('hi');
+export const uploadFile = async (req, res) => {console.log('hoi');
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(404).json({ error: 'Files not found' });
@@ -23,11 +21,13 @@ export const uploadFile = async (req, res) => {console.log('hi');
 
     const imageUrls = [];
 
+    // Iterate through each file in req.files
     for (const file of req.files) {
       const imageUrl = `${url}/upload/file/${file.filename}`;
       imageUrls.push(imageUrl);
     }
 
+    // Send the array of image URLs in the response
     return res.status(200).json({ imageUrls });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -36,8 +36,7 @@ export const uploadFile = async (req, res) => {console.log('hi');
 
 export const getImage = async (req, res) => {
   try {
-    // Assuming User is a Mongoose model, replace it with your actual model
-    const file = await User.findOne({ filename: req.params.filename });
+    const file = await gfs.files.findOne({ filename: req.params.filename });
 
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
